@@ -6,3 +6,8 @@
 - [x] FastAPI
 - [x] uvicorn
 
+## TODO
+
+- [ ] dockerize
+- [ ] JWT
+- [ ] GraphQL
