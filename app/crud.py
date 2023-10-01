@@ -2,7 +2,8 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models import User, Product, Order
-from app.schemas import ProductCreate, UserCreate, OrderCreate
+from app.schemas import ProductCreate, UserCreate, OrderCreate, OrderUpdate, UserUpdate, \
+    ProductUpdate
 
 
 # User
@@ -18,8 +19,8 @@ def get_user_by_email(db: Session, email: str):
     return db.query(User).filter(User.email == email).first()
 
 
-def update_user(db: Session, user_id: int, updated_data: dict):
-    db.query(User).filter(User.id == user_id).update(updated_data)
+def update_user(db: Session, user_id: int, updated_data: UserUpdate):
+    db.query(User).filter(User.id == user_id).update(updated_data.model_dump(exclude_unset=True))
     db.commit()
     return get_user_by_id(db, user_id)
 
@@ -74,15 +75,16 @@ def delete_product(db: Session, product_id: int):
     db.commit()
 
 
-def update_product(db: Session, product_id: int, updated_data: dict):
-    db.query(Product).filter(Product.id == product_id).update(updated_data);
+def update_product(db: Session, product_id: int, updated_data: ProductUpdate):
+    db.query(Product).filter(Product.id == product_id).update(
+            updated_data.model_dump(exclude_unset=True));
     db.commit()
     return get_product_by_id(db, product_id)
 
 
 # Order
-def create_order(db: Session, order: OrderCreate, product_ids: list):
-    products = db.query(Product).filter(Product.id.in_(product_ids)).all()
+def create_order(db: Session, order: OrderCreate):
+    products = db.query(Product).filter(Product.id.in_(order.product_ids)).all()
     db_order = Order(
             buyer_id=order.buyer_id,
             total_amount=order.total_amount,
@@ -109,7 +111,16 @@ def delete_order(db: Session, order_id: int):
     db.commit()
 
 
-def update_order(db: Session, order_id: int, updated_data: dict):
-    db.query(Order).filter(Order.id == order_id).update(updated_data)
+def update_order(db: Session, order_id: int, updated_data: OrderUpdate):
+    db_order = db.query(Order).filter(Order.id == order_id).one()
+    updated_data_dict = updated_data.model_dump(exclude_unset=True, exclude={"product_ids"})
+    for key, value in updated_data_dict.items():
+        setattr(db_order, key, value)
+
+    if updated_data.product_ids:
+        products = db.query(Product).filter(Product.id.in_(updated_data.product_ids)).all()
+        db_order.products = products
+
     db.commit()
+    db.refresh(db_order)
     return get_order_by_id(db, order_id)

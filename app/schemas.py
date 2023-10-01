@@ -81,7 +81,8 @@ class OrderCreate(OrderBase):
 
 class OrderUpdate(BaseModel):
     total_amount: Optional[float] = None
-    shipping_address_id: Optional[int] = None
+    shipping_address_id: Optional[int] = None,
+    product_ids: List[int]
 
 
 class OrderInDB(OrderBase):

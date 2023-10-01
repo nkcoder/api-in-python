@@ -40,9 +40,9 @@ def get_users(offset: int, limit: int, db: Session = Depends(get_db)):
 
 
 @app.put(path="/v1/users/{user_id}", response_model=schemas.UserResponse)
-def update_users(user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)):
-    logging.info(f"put /v1/users, user: {user.model_dump_json()}")
-    return crud.update_user(db, user_id, updated_data=user.model_dump(exclude_unset=True))
+def update_user(user_id: int, user: schemas.UserUpdate, db: Session = Depends(get_db)):
+    logging.info(f"put /v1/users/{user_id}, user: {user.model_dump_json()}")
+    return crud.update_user(db, user_id, updated_data=user)
 
 
 # Product
@@ -71,5 +71,35 @@ def get_products(offset: int, limit: int, db: Session = Depends(get_db)):
 
 @app.put(path="/v1/products/{product_id}", response_model=schemas.ProductResponse)
 def update_product(product_id: int, product: schemas.ProductUpdate, db: Session = Depends(get_db)):
-    logging.info(f"put /v1/products, product: {product.model_dump_json()}")
-    return crud.update_product(db, product_id, updated_data=product.model_dump(exclude_unset=True))
+    logging.info(f"put /v1/products/{product_id}, product: {product.model_dump_json()}")
+    return crud.update_product(db, product_id, updated_data=product)
+
+
+# Order
+@app.post(path="/v1/orders", response_model=schemas.OrderResponse)
+def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db)):
+    logging.info(f"post /v1/orders: {order.model_dump_json()}")
+    return crud.create_order(db=db, order=order)
+
+
+@app.get(path="/v1/orders/{order_id}", response_model=schemas.OrderResponse)
+def get_product(order_id: int, db: Session = Depends(get_db)):
+    logging.info(f"get /v1/orders/{order_id}")
+
+    db_order = crud.get_order_by_id(db, order_id)
+    if not db_order:
+        raise HTTPException(status_code=404, detail="Order not found.")
+
+    return db_order
+
+
+@app.get(path="/v1/orders", response_model=List[schemas.OrderResponse])
+def get_orders(offset: int, limit: int, db: Session = Depends(get_db)):
+    logging.info(f"get /v1/orders, offset: {offset}, limit: {limit}")
+    return crud.get_orders(db, skip=offset, limit=limit)
+
+
+@app.put(path="/v1/orders/{order_id}", response_model=schemas.OrderResponse)
+def update_order(order_id: int, order: schemas.OrderUpdate, db: Session = Depends(get_db)):
+    logging.info(f"put /v1/orders/{order_id}, order: {order.model_dump_json()}")
+    return crud.update_order(db, order_id, updated_data=order)
