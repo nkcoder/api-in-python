@@ -2,6 +2,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models import User, Product, Order
+from app.schemas import ProductCreate, UserCreate, OrderCreate
 
 
 # User
@@ -33,7 +34,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(User).offset(skip).limit(limit).all()
 
 
-def create_user(db: Session, user: User):
+def create_user(db: Session, user: UserCreate):
     hashed_password = user.password + "faked_hash"
     db_user = User(user_name=user.user_name, email=user.email,
                    password=hashed_password,
@@ -53,11 +54,18 @@ def get_products(db: Session, skip: int = 0, limit: int = 100):
     return db.query(Product).offset(skip).limit(limit).all()
 
 
-def create_product(db: Session, product: Product):
-    db.add(product)
+def create_product(db: Session, product: ProductCreate):
+    db_product = Product(
+            seller_id=product.seller_id,
+            product_name=product.product_name,
+            description=product.description,
+            price=product.price,
+            quantity=product.quantity
+    )
+    db.add(db_product)
     db.commit()
-    db.refresh(product)
-    return product
+    db.refresh(db_product)
+    return db_product
 
 
 def delete_product(db: Session, product_id: int):
@@ -66,14 +74,25 @@ def delete_product(db: Session, product_id: int):
     db.commit()
 
 
-# Order
-def create_order(db: Session, order: Order, product_ids: list):
-    products = db.query(Product).filter(Product.id.in_(product_ids)).all()
-    order.products = products
-    db.add(order)
+def update_product(db: Session, product_id: int, updated_data: dict):
+    db.query(Product).filter(Product.id == product_id).update(updated_data);
     db.commit()
-    db.refresh(order)
-    return order
+    return get_product_by_id(db, product_id)
+
+
+# Order
+def create_order(db: Session, order: OrderCreate, product_ids: list):
+    products = db.query(Product).filter(Product.id.in_(product_ids)).all()
+    db_order = Order(
+            buyer_id=order.buyer_id,
+            total_amount=order.total_amount,
+            shipping_address_id=order.shipping_address_id,
+            products=products
+    )
+    db.add(db_order)
+    db.commit()
+    db.refresh(db_order)
+    return db_order
 
 
 def get_order_by_id(db: Session, order_id: int):
