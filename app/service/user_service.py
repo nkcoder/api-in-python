@@ -1,8 +1,8 @@
 from sqlalchemy import func
 
-from persistence.database import SessionLocal as Session
-from persistence.models import User
-from schemas.user_schema import UserUpdate, UserCreate
+from app.persistence.database import SessionLocal as Session
+from app.persistence.models import User
+from app.schemas.user_schema import UserUpdate, UserCreate
 
 
 def get_user_by_id(db: Session, user_id: int):

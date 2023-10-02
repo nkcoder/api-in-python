@@ -3,9 +3,9 @@ import logging
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.orm import Session
 
-from service import order_service
-from persistence.database import get_db
-from schemas.order_schema import *
+from app.persistence.database import get_db
+from app.schemas.order_schema import *
+from app.service import order_service
 
 router = APIRouter(
         prefix="/v1/orders",

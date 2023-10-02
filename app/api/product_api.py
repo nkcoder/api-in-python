@@ -4,9 +4,9 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from service import product_service
-from persistence.database import get_db
-from schemas.product_schema import *
+from app.persistence.database import get_db
+from app.schemas.product_schema import *
+from app.service import product_service
 
 router = APIRouter(
         prefix="/v1/products",

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from persistence.models import Product
-from schemas.product_schema import ProductCreate, ProductUpdate
+from app.persistence.models import Product
+from app.schemas.product_schema import ProductCreate, ProductUpdate
 
 
 def get_product_by_id(db: Session, product_id: int):

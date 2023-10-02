@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 
-from persistence.models import Order, Product
-from schemas.order_schema import OrderCreate, OrderUpdate
+from app.persistence.models import Order, Product
+from app.schemas.order_schema import OrderCreate, OrderUpdate
 
 
 def create_order(db: Session, order: OrderCreate):
