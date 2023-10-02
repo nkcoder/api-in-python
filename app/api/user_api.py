@@ -1,12 +1,12 @@
 import logging
+import os
 
+from app.persistence.database import get_db
+from app.schemas.user_schema import *
+from app.service import user_service
 from fastapi import APIRouter
 from fastapi import Depends, HTTPException
 from sqlalchemy.orm import Session
-
-from app.service import user_service
-from app.persistence.database import get_db
-from app.schemas.user_schema import *
 
 router = APIRouter(
         prefix="/v1/users",
@@ -27,6 +27,7 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
 
 @router.get(path="/{user_id}", response_model=UserResponse)
 def get_user(user_id: int, db: Session = Depends(get_db)):
+    logger.info(f"DATABASE_URL: {os.getenv('DATABASE_URL')}")
     logger.info(f"get user by id: {user_id}")
 
     db_user = user_service.get_user_by_id(db, user_id=user_id)

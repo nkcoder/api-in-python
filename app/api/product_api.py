@@ -13,7 +13,7 @@ router = APIRouter(
         tags=['Product']
 )
 
-logger = logging.getLogger("order router")
+logger = logging.getLogger("product router")
 
 
 # Product

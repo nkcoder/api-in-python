@@ -1,1 +1,1 @@
-uvicorn app.main:app --reload --log-config=logging-config.yml
+uvicorn app.main:app --reload --log-config=logging-config.yml --env-file=.env
