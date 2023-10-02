@@ -9,10 +9,11 @@
 - [x] Python 3.11
 - [x] FastAPI
 - [x] uvicorn
+- [x] dockerize
 
 ## TODO
 
-- [ ] dockerize
+- [ ] tests
 - [ ] JWT
 - [ ] GraphQL
 
